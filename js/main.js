@@ -48,8 +48,8 @@ function loop(t){
   lastT = t; elapsed += dt;
 
   Motion.sample(W, H);
-  Pose.update(Motion.video, W, H, elapsed);   // async; updates Pose.pts when ready
-  Pose.injectPoints(Motion.points);           // hands and head count as wiggle points
+  Pose.update(Motion.video, W, H, elapsed);   // async; updates tracked people when ready
+  Pose.injectPoints(Motion.points, elapsed);  // everyone's hands and heads count as wiggle points
 
   scenes[current].update(dt);
   Avatars.render(ctx, scenes[current].avatar, elapsed, dt, W, H);
@@ -116,7 +116,10 @@ async function start(touchMode){
   if (!touchMode && Avatars.type !== 'none'){
     toast('✨ Waking up the magic mirror...', 4000);
     Pose.init().then(() => {
-      if (Pose.ready) toast('🪞 Magic mirror ready! Strike a pose!');
+      if (Pose.ready){
+        toast('🪞 Magic mirror ready! Strike a pose!');
+        if (load('multi') === '1') setMulti(true, false);
+      }
       else if (Pose.failed) toast('Avatar tracking unavailable here, sparkles still work!');
     });
   }
@@ -133,6 +136,20 @@ document.getElementById('avatarBtn').addEventListener('click', () => {
   setAvatar(next, true);
   if (next !== 'none' && !Pose.ready && !Pose.loading && !Motion.touchMode) Pose.init();
 });
+
+async function setMulti(on, announce){
+  const btn = document.getElementById('multiBtn');
+  btn.textContent = on ? '👥' : '👤';
+  btn.classList.toggle('on', on);
+  save('multi', on ? '1' : '0');
+  if (on && Pose.ready && !Pose.detMulti && announce) toast('👥 Inviting everyone in...', 3000);
+  await Pose.setMode(on ? 'multi' : 'single');
+  if (announce){
+    if (on) toast(Pose.detMulti ? '👥 Everyone can play! Up to 4 wigglers' : 'Multi mode unavailable on this device');
+    else toast('👤 Solo mode');
+  }
+}
+document.getElementById('multiBtn').addEventListener('click', () => setMulti(Pose.mode !== 'multi', true));
 
 document.getElementById('fsBtn').addEventListener('click', () => {
   if (document.fullscreenElement) document.exitFullscreen();

@@ -11,8 +11,8 @@ const Avatars = {
   blob: { x: 0, y: 0, vx: 0, vy: 0 },
 
   /* ---------- rig helpers ---------- */
-  buildRig(t){
-    const g = n => Pose.get(n);
+  buildRig(pts, t){
+    const g = n => Pose.ptsGet(pts, n);
     const mid = (a, b) => (a && b) ? { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 } : (a || b);
     const LS = g('left_shoulder'), RS = g('right_shoulder');
     const LH = g('left_hip'), RH = g('right_hip');
@@ -303,23 +303,40 @@ const Avatars = {
   },
 
   /* ---------- main entry ---------- */
+  // Character lineup when multiple people are on screen in Scene mode:
+  // person 1 = the scene character, person 2 = wiggly smiley,
+  // persons 3-4 = stick figures in their own colors.
+  STICK_COLORS: ['#FFFFFF', '#FFD24A', '#FF6FA5', '#38BDF8'],
+
+  kindFor(idx, sceneAvatar){
+    if (this.type === 'stick') return { kind: 'stick', color: this.STICK_COLORS[idx % 4] };
+    if (this.type === 'smiley') return { kind: 'smiley' };
+    // scene mode lineup
+    if (idx === 0) return { kind: sceneAvatar };
+    if (idx === 1) return { kind: 'smiley' };
+    return { kind: 'stick', color: this.STICK_COLORS[idx % 4] };
+  },
+
   render(ctx, sceneAvatar, t, dt, W, H){
     if (this.type === 'none') return;
     if (Pose.failed){ this.drawBlob(ctx, t, dt, W, H); return; }
     if (!Pose.seen(t)) return;
-    const rig = this.buildRig(t);
-    if (!rig) return;
-    ctx.save();
-    ctx.shadowColor = 'rgba(0,0,0,.35)'; ctx.shadowBlur = 12; ctx.shadowOffsetY = 4;
-    const kind = this.type === 'scene' ? sceneAvatar : this.type;
-    if (kind === 'stick') this.drawStick(ctx, rig, { stick: '#FFFFFF' });
-    else if (kind === 'smiley') this.drawSmiley(ctx, rig, {});
-    else if (kind === 'diver') this.drawDiver(ctx, rig);
-    else if (kind === 'astronaut') this.drawAstronaut(ctx, rig);
-    else if (kind === 'monkey') this.drawMonkey(ctx, rig);
-    else if (kind === 'dino') this.drawDino(ctx, rig);
-    else if (kind === 'penguin') this.drawPenguin(ctx, rig);
-    else this.drawSmiley(ctx, rig, {});
-    ctx.restore();
+    const people = Pose.peopleList(t);
+    for (let i = 0; i < people.length; i++){
+      const rig = this.buildRig(people[i].pts, t);
+      if (!rig) continue;
+      ctx.save();
+      ctx.shadowColor = 'rgba(0,0,0,.35)'; ctx.shadowBlur = 12; ctx.shadowOffsetY = 4;
+      const { kind, color } = this.kindFor(i, sceneAvatar);
+      if (kind === 'stick') this.drawStick(ctx, rig, { stick: color || '#FFFFFF' });
+      else if (kind === 'smiley') this.drawSmiley(ctx, rig, {});
+      else if (kind === 'diver') this.drawDiver(ctx, rig);
+      else if (kind === 'astronaut') this.drawAstronaut(ctx, rig);
+      else if (kind === 'monkey') this.drawMonkey(ctx, rig);
+      else if (kind === 'dino') this.drawDino(ctx, rig);
+      else if (kind === 'penguin') this.drawPenguin(ctx, rig);
+      else this.drawSmiley(ctx, rig, {});
+      ctx.restore();
+    }
   }
 };

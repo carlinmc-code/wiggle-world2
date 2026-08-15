@@ -25,3 +25,5 @@ Push to `main`. Cloudflare Pages (project: wiggle-world) auto-deploys.
 No build step. Pose model loads from jsDelivr CDN at runtime.
 
 v2.1.0 - multi-person mode: dock toggle 👤/👥 switches between SinglePose (fast) and MultiPose Lightning with tracking (up to 4 people; person 1 = scene character, 2 = smiley, 3-4 = colored stick figures)
+
+v2.2.0 - Honey Meadow scene (bees pollinate bloomed flowers, honey meter, shoo the bear) with beekeeper avatar

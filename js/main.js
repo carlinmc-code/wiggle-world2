@@ -2,7 +2,7 @@
 /* Wiggle World - main shell. Wires the UI, runs the loop, and lets the
    child pick how they show up on screen. v2.0.0 */
 
-const scenes = [new Ocean(), new Space(), new Jungle(), new Dinos(), new Snow()];
+const scenes = [new Ocean(), new Space(), new Jungle(), new Dinos(), new Snow(), new Bees()];
 const AVATAR_CYCLE = ['scene', 'stick', 'smiley', 'none'];
 const AVATAR_LABELS = { scene: 'Scene Character', stick: 'Stick Figure', smiley: 'Wiggly Smiley', none: 'Just Sparkles' };
 const AVATAR_ICONS = { scene: '🎭', stick: '🖍️', smiley: '😄', none: '✨' };
@@ -177,7 +177,7 @@ document.getElementById('soundToggle').addEventListener('click', e => {
 });
 window.addEventListener('keydown', e => {
   const n = Number(e.key);
-  if (n >= 1 && n <= 5){ setScene(n - 1); autoTimer = 0; }
+  if (n >= 1 && n <= scenes.length){ setScene(n - 1); autoTimer = 0; }
   if (e.key === 'a' || e.key === 'A') document.getElementById('avatarBtn').click();
 });
 

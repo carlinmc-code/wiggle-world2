@@ -279,6 +279,39 @@ const Avatars = {
     this.hands(ctx, rig, body, u * 0.13);
   },
 
+  drawBeekeeper(ctx, rig){
+    const t = rig.t, u = rig.u, suit = '#F5F1E6', shade = '#C9BFA8', glove = '#E8C05A';
+    this.chain(ctx, [rig.LS, rig.LE, rig.LW], u * 0.19, suit, 0, t, 0);
+    this.chain(ctx, [rig.RS, rig.RE, rig.RW], u * 0.19, suit, 0, t, 2);
+    this.chain(ctx, [rig.LH, rig.LK, rig.LA], u * 0.19, suit, 0, t, 4);
+    this.chain(ctx, [rig.RH, rig.RK, rig.RA], u * 0.19, suit, 0, t, 6);
+    this.torso(ctx, rig, suit, 1.05);
+    // suit zipper + pocket
+    ctx.strokeStyle = shade; ctx.lineWidth = 3;
+    ctx.beginPath(); ctx.moveTo(rig.chest.x, rig.chest.y); ctx.lineTo(rig.pelvis.x, rig.pelvis.y); ctx.stroke();
+    // head with wide-brim hat and mesh veil
+    const r = u * 0.45, hx = rig.head.x, hy = rig.head.y - r * 0.3;
+    this.headCircle(ctx, hx, hy, r, '#FFD9B8');
+    this.face(ctx, hx, hy, r, { cheeks: true });
+    // veil: soft translucent dome with mesh lines
+    ctx.fillStyle = 'rgba(220,228,236,.3)';
+    ctx.beginPath(); ctx.arc(hx, hy + r * 0.1, r * 1.25, 0, 6.28); ctx.fill();
+    ctx.strokeStyle = 'rgba(120,130,148,.5)'; ctx.lineWidth = 1.5;
+    for (let i = -2; i <= 2; i++){
+      ctx.beginPath(); ctx.moveTo(hx + i * r * 0.45, hy - r * 0.9);
+      ctx.lineTo(hx + i * r * 0.55, hy + r * 1.15); ctx.stroke();
+    }
+    ctx.beginPath(); ctx.arc(hx, hy + r * 0.1, r * 1.25, 0.15 * Math.PI, 0.85 * Math.PI); ctx.stroke();
+    // hat: brim + dome
+    ctx.fillStyle = '#E8D9A8'; ctx.strokeStyle = '#C9B888'; ctx.lineWidth = 3;
+    ctx.beginPath(); ctx.ellipse(hx, hy - r * 0.75, r * 1.5, r * 0.32, 0, 0, 6.28); ctx.fill(); ctx.stroke();
+    ctx.beginPath(); ctx.ellipse(hx, hy - r * 0.95, r * 0.8, r * 0.42, 0, Math.PI, 0); ctx.fill(); ctx.stroke();
+    // a friendly bee orbits the beekeeper
+    const ba = t * 3;
+    drawEmoji(ctx, '🐝', hx + Math.cos(ba) * u * 1.1, rig.chest.y + Math.sin(ba) * u * 0.7, 26, 0, Math.cos(ba) < 0);
+    this.hands(ctx, rig, glove, u * 0.15);
+  },
+
   /* ---------- fallback blob when pose tracking is unavailable ---------- */
   drawBlob(ctx, t, dt, W, H){
     if (!Motion.points.length && !this.blob.x) return;
@@ -335,6 +368,7 @@ const Avatars = {
       else if (kind === 'monkey') this.drawMonkey(ctx, rig);
       else if (kind === 'dino') this.drawDino(ctx, rig);
       else if (kind === 'penguin') this.drawPenguin(ctx, rig);
+      else if (kind === 'beekeeper') this.drawBeekeeper(ctx, rig);
       else this.drawSmiley(ctx, rig, {});
       ctx.restore();
     }

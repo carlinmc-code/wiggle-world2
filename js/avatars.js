@@ -308,7 +308,7 @@ const Avatars = {
     ctx.beginPath(); ctx.ellipse(hx, hy - r * 0.95, r * 0.8, r * 0.42, 0, Math.PI, 0); ctx.fill(); ctx.stroke();
     // a friendly bee orbits the beekeeper
     const ba = t * 3;
-    drawEmoji(ctx, '🐝', hx + Math.cos(ba) * u * 1.1, rig.chest.y + Math.sin(ba) * u * 0.7, 26, 0, Math.cos(ba) < 0);
+    drawEmoji('🐝', hx + Math.cos(ba) * u * 1.1, rig.chest.y + Math.sin(ba) * u * 0.7, 26, 0, Math.cos(ba) < 0);
     this.hands(ctx, rig, glove, u * 0.15);
   },
 

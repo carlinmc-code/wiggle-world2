@@ -28,3 +28,4 @@ v2.1.0 - multi-person mode: dock toggle 👤/👥 switches between SinglePose (f
 
 v2.2.0 - Honey Meadow scene (bees pollinate bloomed flowers, honey meter, shoo the bear) with beekeeper avatar
 v2.2.1 - fix: beekeeper's orbiting bee rendered '[object CanvasRenderingContext2D]' as giant pulsing text (wrong drawEmoji signature)
+v2.2.2 - iOS zoom lockdown (pinch + double-tap gesture guards)

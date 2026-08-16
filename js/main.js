@@ -189,3 +189,17 @@ window.addEventListener('keydown', e => {
   const s = load('sens');
   if (s){ document.getElementById('sens').value = s; Motion.threshold = 70 - Number(s); }
 })();
+
+/* ---------- iOS zoom lockdown: Safari ignores user-scalable=no ---------- */
+for (const ev of ['gesturestart', 'gesturechange', 'gestureend'])
+  document.addEventListener(ev, e => e.preventDefault());
+document.addEventListener('touchmove', e => {
+  if (e.touches.length > 1) e.preventDefault();
+}, { passive: false });
+let _lastTap = 0;
+document.addEventListener('touchend', e => {
+  if (e.target !== canvas) return;
+  const now = Date.now();
+  if (now - _lastTap < 350) e.preventDefault();
+  _lastTap = now;
+}, { passive: false });
